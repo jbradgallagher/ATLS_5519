@@ -17,6 +17,7 @@ def setSSLContext():
 
 def getDownloads():
 	setSSLContext()
+	nltk.download('punkt')
 	nltk.download('stopwords')
 	nltk.download('averaged_perceptron_tagger')
 
@@ -107,7 +108,7 @@ def printOulipo(nounRestrict,num,corpusLines,dictWordList,indexDictionary):
 def printUsage():
 	print("Usage: " + sys.argv[0] + " -D (download nltk data) -N (restrict to nouns) -d <dictionary text>  -s <source text> -n <N+ words>")
 	sys.exit()
-	
+
 
 def main():
 	
