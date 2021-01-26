@@ -25,12 +25,17 @@ def getDictionary(fname):
 	fullDict = []
 	stop_words = set(stopwords.words('english'))
 	newWords = []
+	#read the dictionary file, storing each line (one word per line)
+	#as an element in "fullDict"
 	try:
 		with open(fname, "r") as fh:
 			fullDict = fh.readlines()
 	except IOError:
 		printUsage()
-
+	#loop over the words in fullDict, make sure all letters are lowercase
+	#and skip words that began with a capital letter or that appear in the
+	#the "stop_words" list.  Append the words that fit this criteria to newWords
+	#and return the list	
 	for wrd in [word.lower() for word in fullDict if not re.match(r'^[A-Z]',word)]:
 		wrd = wrd.strip("\n")
 		if not wrd in stop_words:
@@ -40,6 +45,8 @@ def getDictionary(fname):
 
 def getCorpusLines(fname):
 	fileLines = []
+	#read the source file, storing each line (multiple words)
+	#in an element of "fileLines" and return the list 
 	try:
 		with open(fname, "r") as fh:
 			fileLines = fh.readlines()
@@ -50,7 +57,11 @@ def getCorpusLines(fname):
 
 def getIndexDictionary(wrdList):
 	indexDict = {}
-
+	#this function takes as input the list created by "getDictionary()"
+	#we need a fast way to find the index in our dictionary list based
+	#on a word found in our source text. This loop builds a
+	#python dictionary, key-value pairs of the form {word, N}
+	#where N is the index into the dictionary list
 	wrdCnt = 0
 	for wrd in wrdList:
 		indexDict[wrd] = wrdCnt
@@ -64,23 +75,43 @@ def getNthWord(nounRestrict,num,wrd,dictWordList,indexDictionary):
 	typeCount = 0
 	replaceWord = ""
 	
+	#first we get the index into "dictWordList" from 
+	# "indexDirectory", using the lower cassed word (wrd) as a key 
+	# that was read from our source text. If it doesn't exist in 
+	# "indexDictionary" then just return "wrd"
 	try:
 		idx = indexDictionary[wrd]
 	except:
 		replaceWord = wrd
 		return replaceWord
 
-	counter = itertools.count(idx)
-
+	#if we have a valid index (idx), get the part of speech tag
+	# of our input word (wrd). nltk.pos_tag will return a list
+	# of tuples, but since we are doing this one word at a time
+	# that list will only have one element. The tuple contains (word,tag)
+	# so, myWrdPos[0][0] is the word and myWrdPos[0][1] is the tag
 	myWrdPos = nltk.pos_tag(nltk.word_tokenize(wrd))
+	#check to see if we are either running in nounRestrict mode or not,
+	# if not, run the W+N operation on the word regardless of its part of speech
+	# if we are using nounRestrict mode, make sure the input word (wrd)
+	# has an 'NN' part of speech tag, if not, return "wrd" as "replaceWord"
 	if (myWrdPos[0][1] == 'NN' and nounRestrict) or not nounRestrict:
+		#run a while loop into "num" part of speech types are encountered
+		# then return the "replacedWord"
 		while typeCount < num:
-			if nidx != len(dictWordList) - 1:
-				nidx = next(counter)
+			#if idx is still less than the size of "dictWordList" minus 1
+			# increment "idx" to get the next word in "dictWordList"
+			# to test if it has the same tag as the input word ("wrd")
+			# if we have reached the end of the list, reset "idx" to 0 (begining of list)
+			if idx != len(dictWordList) - 1:
+				idx += 1
 			else:
-				counter = itertools.count()
-				nidx = next(counter)
-			nextWrdPos = nltk.pos_tag(nltk.word_tokenize(dictWordList[nidx]))
+				idx = 0
+			#get the next word pos tuple
+			nextWrdPos = nltk.pos_tag(nltk.word_tokenize(dictWordList[idx]))
+			#test if the nextWrdPos tag is the same as the myWrdPos tag
+			#if so assign the nextWrdPos word (which is accessed in the first
+			# element of the tuple, nextWrdPos[0][0])
 			if(myWrdPos[0][1] == nextWrdPos[0][1]):
 				replaceWord = nextWrdPos[0][0]
 				typeCount += 1
@@ -91,13 +122,29 @@ def getNthWord(nounRestrict,num,wrd,dictWordList,indexDictionary):
 
 def printOulipo(nounRestrict,num,corpusLines,dictWordList,indexDictionary):
 	stop_words = set(stopwords.words('english'))
+	#loop over each line in our source text
 	for line in corpusLines:
+		#rstrip will remove any space at the end of the line
 		line = line.rstrip()
+		#do a rudimentary splitting of the line on spaces
+		# to create a list of words in "lineData" This list
+		# will still have words attached to punctuation, since it just
+		# splits on empty space
 		lineData = line.split(' ')
+		#loop over each word in lineData
 		for wrd in lineData:
-			if wrd.isalpha():
-				tok = nltk.word_tokenize(wrd)
+			# "wrd" may have punctuation (commas or a period) concatenated to it
+			# by running nltk.word_tokenize(wrd) we get a list returned that will
+			# for "wrd" = "dog," for instance will have tok[0] = "dog" and tok[1] = ","
+			# so we only look at the 0th element of "tok" and get rid of the punctuation
+			# in this way. Note this isn't taking care of the case of porrly parsed text
+			# like ",dog" 
+			tok = nltk.word_tokenize(wrd)
+			#make sure the first element of tok is all letters, if not print out "wrd" as is
+			if tok[0].isalpha():
+				#make sure tok[0] is not in stop words, if it is print out "wrd" as is
 				if not tok[0].lower() in stop_words:
+					#if tok[0] is not in "stop_words" make call to getNthWord
 					print(getNthWord(nounRestrict,num,tok[0].lower(),dictWordList,indexDictionary), end=" ")
 				else:
 					print(wrd, end=" ")
