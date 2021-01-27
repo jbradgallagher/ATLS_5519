@@ -99,7 +99,7 @@ def main():
 		printUsage()
 	else:
 		try:
-			opts, args = getopt.getopt(sys.argv[1:], 'ABJMSWHKGd:s:n:')
+			opts, args = getopt.getopt(sys.argv[1:], 'DABJMSWHKGd:s:n:')
 			for o, a in opts:
 				if o == '-D':
 					getDownloads()
