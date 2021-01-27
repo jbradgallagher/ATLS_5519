@@ -140,18 +140,23 @@ def printOulipo(nounRestrict,num,corpusLines,dictWordList,indexDictionary):
 			# in this way. Note this isn't taking care of the case of porrly parsed text
 			# like ",dog" 
 			tok = nltk.word_tokenize(wrd.lower())
-			#make sure tok has a size greater than zero and then
-			#make sure the first element of tok is all letters, if not print out "wrd" as is
+			#make sure tok has a size greater than zero if not return "wrd" (this handle empty lines)
+			#otherwise loop over the elements of tok which may have a word and punctuation
+			#when a word is ecountered, process it if it is not in stop words, other wise
+			#print out the token "c"
 			if(len(tok) > 0):
-				if tok[0].isalpha():
-					#make sure tok[0] is not in stop words, if it is print out "wrd" as is
-					if not tok[0].lower() in stop_words:
+				for c in tok:
+					if c.isalpha():
+						#make sure tok[0] is not in stop words, if it is print out "wrd" as is
+						if not c.lower() in stop_words:
 						#if tok[0] is not in "stop_words" make call to getNthWord
-						print(getNthWord(nounRestrict,num,tok[0].lower(),dictWordList,indexDictionary), end=" ")
+							print(getNthWord(nounRestrict,num,c.lower(),dictWordList,indexDictionary), end="")
+						else:
+							print(c, end="")
 					else:
-						print(wrd, end=" ")
-				else:
-					print(wrd, end=" ")
+						print(c, end="")
+				#make sure and print a space after the tok list is processed
+				print(end=" ")
 			else:
 				print(wrd, end=" ")
 		print()
