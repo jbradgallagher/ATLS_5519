@@ -139,7 +139,7 @@ def printOulipo(nounRestrict,num,corpusLines,dictWordList,indexDictionary):
 			# so we only look at the 0th element of "tok" and get rid of the punctuation
 			# in this way. Note this isn't taking care of the case of porrly parsed text
 			# like ",dog" 
-			tok = nltk.word_tokenize(wrd)
+			tok = nltk.word_tokenize(wrd.lower())
 			#make sure tok has a size greater than zero and then
 			#make sure the first element of tok is all letters, if not print out "wrd" as is
 			if(len(tok) > 0):
