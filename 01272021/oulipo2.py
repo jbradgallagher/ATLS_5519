@@ -34,6 +34,7 @@ def getSourceLines(fname):
 
 def getSimilarWord(corpus,wrd,srange):
 	simWrds = corpus.similar_words(wrd,srange)
+
 	if len(simWrds) == 0:
 		return wrd
 	else:
@@ -84,7 +85,8 @@ def printUsage():
 	print("Corpora:")
 	print("(-B) William Blake, (-J) Jane Austen,")
 	print("(-M) John Milton, (-S) William Shakespeare,")
-	print("(-W) Walt Whitman, (-H) Herman Melville, (-K) The Bible\n")
+	print("(-W) Walt Whitman, (-H) Herman Melville, (-K) The Bible")
+	print("(-G) Whole Gutenberg Corpus\n")
 	sys.exit()
 
 
