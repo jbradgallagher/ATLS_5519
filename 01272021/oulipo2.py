@@ -34,13 +34,32 @@ def getSourceLines(fname):
 
 def getSimilarWord(corpus,wrd,srange):
 	simWrds = corpus.similar_words(wrd,srange)
-
 	if len(simWrds) == 0:
 		return wrd
 	else:
 		return simWrds[random.randint(0,len(simWrds)-1)]
 		
-def printSimilarTranslation(corpus,corpusLines,srange,useStopWords):
+def getSimilarWordPOS(corpus,wrd,srange):
+	simWrds = corpus.similar_words(wrd,srange)
+
+	currentWrdPOS = nltk.pos_tag(nltk.word_tokenize(wrd))
+
+	rplWrds = [] 
+	for swrd in simWrds:
+		nextWrdPOS = nltk.pos_tag(nltk.word_tokenize(swrd))
+		if(currentWrdPOS[0][1] == nextWrdPOS[0][1]):
+			rplWrds.append(nextWrdPOS[0][0])
+
+
+	if len(simWrds) == 0:
+		return wrd
+	else:
+		if len(rplWrds) == 0:
+			return simWrds[random.randint(0,len(simWrds)-1)]
+		else:
+			return rplWrds[random.randint(0,len(rplWrds)-1)]
+		
+def printSimilarTranslation(corpus,corpusLines,srange,useStopWords,usePOS):
 	stop_words = set(nltk.corpus.stopwords.words('english'))
 	#loop over each line in our source text
 	for line in corpusLines:
@@ -67,7 +86,10 @@ def printSimilarTranslation(corpus,corpusLines,srange,useStopWords):
 						#make sure tok[0] is not in stop words, if it is print out "wrd" as is
 						if (useStopWords and not c.lower() in stop_words) or not useStopWords:
 						#if tok[0] is not in "stop_words" make call to getNthWord
-							print(getSimilarWord(corpus,c,srange), end="")
+							if usePOS:
+								print(getSimilarWordPOS(corpus,c,srange), end="")
+							else:
+								print(getSimilarWord(corpus,c,srange), end="")
 						else:
 							print(c, end="")
 					else:
@@ -81,7 +103,7 @@ def printSimilarTranslation(corpus,corpusLines,srange,useStopWords):
 def printUsage():
 	print()
 	print("Usage: " + sys.argv[0] + " -D (download nltk data) -B,J,M,S,W,H,K (corpus selection) -A (don't use stop words)")
-	print("		  -s <sourceText> -n <similar_poolsize (default=20)> (larger number results in more diverse text)\n")
+	print("		  -P (use part of speech tagging) -s <sourceText> -n <similar_poolsize (default=20)> (larger number results in more diverse text)\n")
 	print("Corpora:")
 	print("(-B) William Blake, (-J) Jane Austen,")
 	print("(-M) John Milton, (-S) William Shakespeare,")
@@ -92,6 +114,7 @@ def printUsage():
 
 def main():
 	useStopWords = True
+	usePOS = False
 	sourceFile = ""
 	srange = 20
 
@@ -99,13 +122,15 @@ def main():
 		printUsage()
 	else:
 		try:
-			opts, args = getopt.getopt(sys.argv[1:], 'DABJMSWHKGd:s:n:')
+			opts, args = getopt.getopt(sys.argv[1:], 'PDABJMSWHKGd:s:n:')
 			for o, a in opts:
 				if o == '-D':
 					getDownloads()
 					sys.exit()
 				if o == '-A':
 					useStopWords = False
+				if o == '-P':
+					usePOS = True
 				if o == '-s':
 					sourceFile = a
 				if o == '-n':
@@ -127,7 +152,7 @@ def main():
 				if o == '-G':
 					corpus = nltk.text.ContextIndex([word.lower( ) for word in nltk.corpus.gutenberg.words()])
 					
-			printSimilarTranslation(corpus,getSourceLines(sourceFile),srange,useStopWords)
+			printSimilarTranslation(corpus,getSourceLines(sourceFile),srange,useStopWords,usePOS)
 					
 		except getopt.GetoptError as err:
 			print(err)
