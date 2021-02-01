@@ -1,0 +1,17 @@
+{
+"origin":["#line#"],
+"line":["#firstLine# #secondLine#  #thirdLine#  #fourthLine#"],
+"firstLine":["A HOUSE OF #materials#"],
+"secondLine":["#adverbs# #places#"],
+"thirdLine":["USING #lights#"],
+"fourthLine":["INHABITED BY #inhabit#"],
+
+"materials":["WOOD","STONE","ICE","THE WIND","SOUND","FIRE"],
+"adverbs":["IN", "ON","INSIDE", "OUTSIDE", "UNDERNEATH", "BEHIND"],
+"places":["EARTH", "THE GROUND", "HEAVEN", "HELL", "THE OCEAN", "THE DESERT"],
+"lights":["CANDLELIGHT", "ELECTRIC LIGHT", "A CAMPFIRE", "THE SUN"],
+"inhabit":["ALL OF MY FRIENDS", "MY FAMILY", "ALL OF MY ENEMIES", "SOME PRETTY DANGEROUS ANIMALS"]
+
+
+}
+

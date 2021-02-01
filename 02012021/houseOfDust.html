@@ -1,0 +1,51 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="hod.css" />
+
+<body>
+	<div id="poem">
+	<p>
+		<span id="line1"></span></br>
+		<span id="line2"></span></br>
+		<span id="line3"></span></br>
+		<span id="line4"></span>
+	</p>
+</div>
+
+<script type="text/javascript">
+	var materials = ["SAND","BRICK","STRAW","DRIFTWOOD","WOOD","SUNLIGHT","WIND","DUST","STARDUST","TURBULENT DREAMS","DREAMS"];
+	var preps= ["IN", "ON","INSIDE", "OUTSIDE", "UNDERNEATH", "BEHIND"];
+	var places=["EARTH", "THE GROUND", "HEAVEN", "HELL", "THE OCEAN", "THE DESERT","A ROARING RIVER","A DESOLATE MOON BASE","A DENSE FOREST","A DESERT","A LARGE CITY","A SMALL TOWN"];
+	var lights=["CANDLELIGHT", "ELECTRIC LIGHT", "A CAMPFIRE", "THE SUN"];
+	var inhabit=["ALL OF MY FRIENDS", "MY FAMILY", "ALL OF MY ENIMIES", "SOME PRETTY DANGEROUS ANIMALS"];
+
+
+	function getRandomInt(min, max) {
+    	min = Math.ceil(min);
+    	max = Math.floor(max);
+    	return Math.floor(Math.random() * (max - min)) + min;
+	}
+
+	function getRandomWrd(wrdList) {
+		return wrdList[getRandomInt(0,wrdList.length-1)];
+	}
+
+	function setPoem() {
+		lineOne = document.getElementById('line1');
+		lineOne.innerHTML = "A HOUSE OF " + getRandomWrd(materials);
+		lineTwo = document.getElementById('line2');
+		lineTwo.innerHTML = getRandomWrd(preps) + " " + getRandomWrd(places);
+		lineThree = document.getElementById('line3');
+		lineThree.innerHTML = "USING " + getRandomWrd(lights);
+		lineFour = document.getElementById('line4');
+		lineFour.innerHTML = "INHABITED BY " + getRandomWrd(inhabit);
+		setTimeout(function() { setPoem();}, 6000);
+	}
+	setPoem();
+</script>
+</body>
+</html>
+
+
+
+

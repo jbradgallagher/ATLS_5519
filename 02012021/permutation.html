@@ -1,0 +1,103 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="hod.css" />
+
+<body>
+	<div id="poem">
+	<p>
+		<span id="line1"></span></br>
+		<span id="line2"></span></br>
+		<span id="line3"></span></br>
+		<span id="line4"></span>
+	</p>
+</div>
+
+<script type="text/javascript">
+	var sentence = ["HEAVEN ", "IS ", "HELL ", "ON ", "EARTH "];
+	var pcnt = 1;
+	var gcnt = 0;
+	var myLines = "";
+	var permutations = [];
+
+	const permutator = (inputArr) => {
+	  let result = [];
+	  const permute = (arr, m = []) => {
+	    if (arr.length === 0) {
+	      result.push(m)
+	    } else {
+	      for (let i = 0; i < arr.length; i++) {
+	        let curr = arr.slice();
+	        let next = curr.splice(i, 1);
+	        permute(curr.slice(), m.concat(next))
+	     }
+	   }
+	 }
+
+	 permute(inputArr)
+
+	 return result;
+	}
+
+	permutations = permutator(sentence);
+
+	function shuffle(array) {
+	  for (let i = array.length - 1; i > 0; i--) {
+	    let j = Math.floor(Math.random() * (i + 1));
+	    [array[i], array[j]] = [array[j], array[i]];
+	  }
+	}
+
+	function factorialize(num) {
+	  if (num < 0) 
+	        return -1;
+	  else if (num == 0) 
+	      return 1;
+	  else {
+	      return (num * factorialize(num - 1));
+	  }
+	}
+
+	function permutate(array,i,j) {
+		[array[i],array[j]] = [array[j],array[i]];
+	}
+
+	function getRandomInt(min, max) {
+    	min = Math.ceil(min);
+    	max = Math.floor(max);
+    	return Math.floor(Math.random() * (max - min)) + min;
+	}
+
+	function getRandomWrd(wrdList) {
+		return wrdList[getRandomInt(0,wrdList.length-1)];
+	}
+
+	function setPoem(time,elid) {
+		shuffle(sentence);
+		line = document.getElementById(elid);
+		line.innerHTML = sentence.join(' ');
+		gcnt++;
+		setTimeout(function() { setPoem(time,elid);}, time);
+	}
+
+	function setPoemPerm(time,elid) {
+		
+		line = document.getElementById(elid);
+		myLines = myLines + "<br>" + permutations[gcnt].join(' ');
+		line.innerHTML = myLines;
+		gcnt++;
+		if(gcnt == factorialize(sentence.length))
+			gcnt = 0;
+		
+		setTimeout(function() { setPoemPerm(time,elid);}, time);
+	}
+
+	setPoemPerm(200,'line1');
+	
+
+</script>
+</body>
+</html>
+
+
+
+
