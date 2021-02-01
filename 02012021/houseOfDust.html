@@ -5,9 +5,9 @@
 <body>
 	<div id="poem">
 	<p>
-		<span id="line1"></span></br>
-		<span id="line2"></span></br>
-		<span id="line3"></span></br>
+		<span id="line1"></span><br>
+		<span id="line2"></span>
+		<span id="line3"></span>
 		<span id="line4"></span>
 	</p>
 </div>
@@ -34,11 +34,11 @@
 		lineOne = document.getElementById('line1');
 		lineOne.innerHTML = "A HOUSE OF " + getRandomWrd(materials);
 		lineTwo = document.getElementById('line2');
-		lineTwo.innerHTML = getRandomWrd(preps) + " " + getRandomWrd(places);
+		lineTwo.innerHTML = "<h2>" + getRandomWrd(preps) + " " + getRandomWrd(places) + "</h2>";
 		lineThree = document.getElementById('line3');
-		lineThree.innerHTML = "USING " + getRandomWrd(lights);
+		lineThree.innerHTML = "<h3>" + "USING " + getRandomWrd(lights) + "</h3>";
 		lineFour = document.getElementById('line4');
-		lineFour.innerHTML = "INHABITED BY " + getRandomWrd(inhabit);
+		lineFour.innerHTML = "<h4>" + "INHABITED BY " + getRandomWrd(inhabit) + "</h4>";
 		setTimeout(function() { setPoem();}, 6000);
 	}
 	setPoem();
