@@ -9,8 +9,8 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-nltk.download('stopwords')
-nltk.download('punkt')
+#nltk.download('stopwords')
+#nltk.download('punkt')
 stop_words = set(stopwords.words('english'))
 
 
@@ -121,7 +121,7 @@ def main():
 	corpPrefixOne = ""
 	corpPrefixTwo = ""
 	makeFrame = ""
-
+	wrdSize = 3
 	if(len(sys.argv) == 1):
 			printUsage()
 	else:
