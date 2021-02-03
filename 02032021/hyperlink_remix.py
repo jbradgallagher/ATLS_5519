@@ -21,39 +21,38 @@ def removeDups(myList):
 			newList.append(i)
 	return newList
 
-def returnWords(line):
+def returnWords(line,wrdSize):
 	new_words = []
 	words = nltk.word_tokenize(line)
 	for wrd in [word.lower() for word in words if (word.isalnum() or re.search(r'\-',word))]:
-		if not wrd in stop_words and len(wrd) > 5:
+		if not wrd in stop_words and len(wrd) > wrdSize:
 			new_words.append(wrd)
 			
 	return new_words
 
 
-def getFileDict(prefixName):
+def getFileDict(prefixName,wrdSize):
 	fileDict = {}
 	fileList = glob.glob(prefixName+"*")
 
 	for file in fileList:
 		fileHandle = open(file.strip('\n'), "r")
 		fileContents = fileHandle.read();
-		fileDict[file.strip('\n').split('.')[0]] = returnWords(fileContents)
+		fileDict[file.strip('\n').split('.')[0]] = returnWords(fileContents,wrdSize)
 
 	return fileDict
 
 
 
-def hypertextRemix(corpusOnePrefix,corpusTwoPrefix,whichFrame):
+def hypertextRemix(corpusOnePrefix,corpusTwoPrefix,whichFrame,wrdSize):
 
 	wordsToLink = []
-	corpusOneDict = getFileDict(corpusOnePrefix)
-	corpusTwoDict = getFileDict(corpusTwoPrefix)
+	corpusOneDict = getFileDict(corpusOnePrefix,wrdSize)
+	corpusTwoDict = getFileDict(corpusTwoPrefix,wrdSize)
 	linkToFileDict = dict() 
 	for fileNameOneKey in corpusOneDict:
 
 		allFoundWords = []
-		filesToLink = []
 		for fileNameTwoKey in corpusTwoDict:
 			#go over the list of filtered words for corpusTwo file "pkey"
 			for wrd in corpusTwoDict[fileNameTwoKey]:
@@ -64,7 +63,6 @@ def hypertextRemix(corpusOnePrefix,corpusTwoPrefix,whichFrame):
 					except:
 						linkToFileDict[wrd] = []
 						linkToFileDict[wrd].append(fileNameTwoKey)
-					#filesToLink.append(fileNameTwoKey)
 					
 					
 		wordsToLink = removeDups(allFoundWords)
@@ -116,7 +114,7 @@ def hypertextRemix(corpusOnePrefix,corpusTwoPrefix,whichFrame):
 
 def printUsage():
 	print()
-	print("Usage: " + sys.argv[0] + " -p <corpusPrefixOne> -q <corpusPrefixTwo> -f (leftFrame || rightFrame)")
+	print("Usage: " + sys.argv[0] + " -p <corpusPrefixOne> -q <corpusPrefixTwo> -f <leftFrame || rightFrame> -n <minimum size of word>")
 	print()
 
 def main():
@@ -128,7 +126,7 @@ def main():
 			printUsage()
 	else:
 		try:
-			opts, args = getopt.getopt(sys.argv[1:], 'p:q:f:')
+			opts, args = getopt.getopt(sys.argv[1:], 'p:q:f:n:')
 			for o, a in opts:
 				if o == '-p':
 					corpPrefixOne = a
@@ -136,8 +134,10 @@ def main():
 					corpPrefixTwo = a
 				if o == '-f':
 					makeFrame = a
+				if o == '-n':
+					wrdSize = int(a)
 
-			hypertextRemix(corpPrefixOne,corpPrefixTwo,makeFrame)
+			hypertextRemix(corpPrefixOne,corpPrefixTwo,makeFrame,wrdSize)
 
 		except getopt.GetoptError as err:
 			print(err)
