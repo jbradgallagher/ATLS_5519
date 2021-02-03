@@ -24,7 +24,7 @@ def removeDups(myList):
 def returnWords(line,wrdSize):
 	new_words = []
 	words = nltk.word_tokenize(line)
-	for wrd in [word.lower() for word in words if (word.isalnum() or re.search(r'\-',word))]:
+	for wrd in [word.lower() for word in words]:
 		if not wrd in stop_words and len(wrd) > wrdSize:
 			new_words.append(wrd)
 			
