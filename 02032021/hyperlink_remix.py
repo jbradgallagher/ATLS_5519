@@ -59,7 +59,6 @@ def hypertextRemix(corpusOnePrefix,corpusTwoPrefix,whichFrame):
 			for wrd in corpusTwoDict[fileNameTwoKey]:
 				if wrd in corpusOneDict[fileNameOneKey]:
 					allFoundWords.append(wrd)
-					print("H: ",fileNameOneKey,fileNameTwoKey,wrd)
 					try:
 						linkToFileDict[wrd].append(fileNameTwoKey)
 					except:
@@ -117,7 +116,7 @@ def hypertextRemix(corpusOnePrefix,corpusTwoPrefix,whichFrame):
 
 def printUsage():
 	print()
-	print("Usage: " + sys.argv[0] + " -p <corpusPrefixOne> -q <corpusPrefixTwo> -f (left || right)")
+	print("Usage: " + sys.argv[0] + " -p <corpusPrefixOne> -q <corpusPrefixTwo> -f (leftFrame || rightFrame)")
 	print()
 
 def main():
