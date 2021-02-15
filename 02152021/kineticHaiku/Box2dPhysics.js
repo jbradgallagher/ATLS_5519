@@ -57,7 +57,7 @@ var Physics = window.Physics = function(element,elementThree,aContext,myWords,sc
     this.halfSteps = [0,4,7,9,12];
     this.halfStepsTwo = [0,2,6,7,9,11];
 
-    this.rootNote = 54;
+    this.rootNote = 62;
     this.sensitivity = 5000;
 
     this.noteCounter = 0;

@@ -73,10 +73,12 @@
                 var textOutput;
                 var localVideo;
                 var localStream;
-                var cdCount = 2;
+                var cdCount = 4;
                 var oldData = {'data':[]};
                 var imgData = {'data':[]};
                 var frameCount = 0;
+                var vidWidth = 720;
+                var vidHeight = 480;
                 
                 var myRed = "rgba(200,50,0,0.75)";
                 var myBrightRed = "rgba(250,100,50,1.0)";
@@ -112,10 +114,10 @@
                         physics = window.physics = new Physics(output,textOutput,aContext,myWords,2);
                         
                         // Create some walls
-                        new Body(physics, null,{ color: "red", type: "static", x: 0, y: 0, height: 10,  width: 720 });
-                        new Body(physics, null,{ color: "red", type: "static", x: 0, y: 240, height: 10,  width: 720});
-                        new Body(physics, null,{ color: "red", type: "static", x: 0, y: 10, height: 480, width: 10 });
-                        new Body(physics, null,{ color: "red", type: "static", x: 360, y:10, height: 480, width: 10 });
+                        new Body(physics, null,{ color: "red", type: "static", x: 0, y: 0, height: 10,  width: vidWidth });
+                        new Body(physics, null,{ color: "red", type: "static", x: 0, y: vidHeight/2, height: 10,  width: vidWidth});
+                        new Body(physics, null,{ color: "red", type: "static", x: 0, y: 10, height: vidHeight, width: 10 });
+                        new Body(physics, null,{ color: "red", type: "static", x: vidWidth/2, y:10, height: vidHeight, width: 10 });
                         
                         //  new Body(physics, { image: img, x: 5, y: 8 });
                        // new Body(physics, { image: img, width: 150, height: 30, impulseActive: false, x: 13, y: 8 });
