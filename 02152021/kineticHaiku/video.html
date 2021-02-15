@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web Fun</title>
+        <meta charset="utf-8">
+            <style>
+                .buttoncontainer {
+                    width: 100%;
+                }
+                .slidecontainer {
+                  width: 100%;
+                }
+
+                .slider {
+                  -webkit-appearance: none;
+                  width: 30%;
+                  height: 25px;
+                  background: #d3d3d3;
+                  outline: none;
+                  opacity: 0.7;
+                  -webkit-transition: .2s;
+                  transition: opacity .2s;
+                }
+
+                .slider:hover {
+                  opacity: 1;
+                }
+
+                .slider::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 25px;
+                  height: 25px;
+                  background: #4CAF50;
+                  cursor: pointer;
+                }
+
+                .slider::-moz-range-thumb {
+                  width: 25px;
+                  height: 25px;
+                  background: #4CAF50;
+                  cursor: pointer;
+                }
+            </style>
+                <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+                <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
+                <script type="text/javascript" src="Box2dPhysics.js"></script>
+                <script type="text/javascript" src="Box2dBody.js"></script>
+                <script type="text/javascript" src="sinewave.js"></script>
+                 <script type="text/javascript" src="words.js"></script>
+          
+                <script type="text/javascript"> 
+                var firstStart = true;
+                var streamAttached = false;
+                var prevTog = 0;
+                //box2d vars
+                var b2Vec2 = Box2D.Common.Math.b2Vec2;
+                var b2BodyDef = Box2D.Dynamics.b2BodyDef;
+                var b2Body = Box2D.Dynamics.b2Body;
+                var b2FixtureDef = Box2D.Dynamics.b2FixtureDef;
+                var b2Fixture = Box2D.Dynamics.b2Fixture;
+                var b2World = Box2D.Dynamics.b2World;
+                var b2MassData = Box2D.Collision.Shapes.b2MassData;
+                var b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
+                var b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
+                var b2DebugDraw = Box2D.Dynamics.b2DebugDraw;
+                var physics;
+
+                var lastFrame = new Date().getTime();
+                
+                var oContext;
+                var output;
+                var textOutput;
+                var localVideo;
+                var localStream;
+                var cdCount = 2;
+                var oldData = {'data':[]};
+                var imgData = {'data':[]};
+                var frameCount = 0;
+                
+                var myRed = "rgba(200,50,0,0.75)";
+                var myBrightRed = "rgba(250,100,50,1.0)";
+                var myBlue = "rgba(0,50,200,0.75)";
+                var myBrightBlue = "rgba(50,100,250,1.0)";
+                var myGreen = "rgba(0,200,50,0.75)";
+                var myBrightGreen = "rgba(50,250,100,1.0)";
+                var myYellow = "rgba(200,200,50,0.75)";
+                var myBrightYellow = "rgba(250,250,50,1.0)";
+
+                //var myTeal = "rgba(50,200,200,0.75)";
+                //var myBrightTeal = "rgba(100,200,200,1.0)";
+                //var myOrange = "rgba(100,100,0,0.75)";
+                //var myBrightOrange = "rgba(150,150,0,1.0)";
+
+                var actxCall = window.webkitAudioContext || window.AudioContext;
+                aContext = new actxCall();
+                //aContext = null;
+                myWords = new RandomWords();
+               // var img = new Image();
+               // img.src = "/Users/jbgallag/SoundShapesBox2d/text1.png";
+               // img.crossOrigin = 'anonymous';
+		          startMedia();
+                  window.onload = init; 
+                  function init() {
+                   
+                    output = document.querySelector('#output');
+                    textOutput = document.querySelector('#textOutput');
+                    localVideo = document.querySelector('#localVideo');
+                    oContext = output.getContext('2d');
+ 
+                    localVideo.onloadstart = function() {
+                        physics = window.physics = new Physics(output,textOutput,aContext,myWords,2);
+                        
+                        // Create some walls
+                        new Body(physics, null,{ color: "red", type: "static", x: 0, y: 0, height: 10,  width: 720 });
+                        new Body(physics, null,{ color: "red", type: "static", x: 0, y: 240, height: 10,  width: 720});
+                        new Body(physics, null,{ color: "red", type: "static", x: 0, y: 10, height: 480, width: 10 });
+                        new Body(physics, null,{ color: "red", type: "static", x: 360, y:10, height: 480, width: 10 });
+                        
+                        //  new Body(physics, { image: img, x: 5, y: 8 });
+                       // new Body(physics, { image: img, width: 150, height: 30, impulseActive: false, x: 13, y: 8 });
+                        //    new Body(physics, { color: "blue", x: 8, y: 3 });
+                        //new Body(physics, { color: "gray", shape: "circle", radius: 15, x: 110, y: 25 });
+                        new Body(physics, aContext,{ color: myRed, shape: "circle", radius: 10, impulseActive: false, wordType: "verb", tone: 240,  colorTwo: myBrightRed, x: 60, y: 25, badTone: false });
+                        new Body(physics, aContext, { color: myBlue, shape: "circle", radius: 10, impulseActive: false, wordType: "noun", tone: 240,  colorTwo: myBrightBlue, x: 120, y: 25, badTone: false  });
+                        new Body(physics, aContext, { color: myGreen, shape: "circle", radius: 10, impulseActive: false, wordType: "adj", tone: 240,  colorTwo: myBrightGreen, x: 180, y: 25, badTone: false  });
+                        new Body(physics, aContext, { color: myYellow, shape: "circle", radius: 10, impulseActive: false, wordType: "adv", tone: 240,  colorTwo: myBrightYellow, x: 260, y: 25, badTone: false  });
+                        //new Body(physics, { color: myTeal, shape: "circle", radius: 10, impulseActive: false, wordType: "pro", resetWord: false,  colorTwo: myBrightTeal, x: 150, y: 25 });
+                        //new Body(physics, { color: myOrange, shape: "circle", radius: 10, impulseActive: false, wordType: "pre", resetWord: false,  colorTwo: myBrightOrange, x: 180, y: 25 });
+
+                       
+                       // new Body(physics, { color: "blue", shape: "circle", radius: 15, x: 190, y: 25 });
+                        
+                        
+                        physics.collision(); 
+                        firstStart = false;
+                        console.log("Start Physics!");
+                    }
+
+                    //startMedia();
+                    //box2d init
+                   
+                    window.requestAnimFrame = (function(callback) {
+                                               return window.requestAnimationFrame ||
+                                               window.webkitRequestAnimationFrame ||
+                                               window.mozRequestAnimationFrame ||
+                                               windowoRequestAnimationFrame ||
+                                               window.msRequestAnimationFrame ||
+                                               function(callback) { window.setTimeout(callback, 1);};
+                                               })();
+                                               animate(localVideo,oContext);
+                                               
+                                               
+                }
+                async function startMedia() {
+                    var constraints = {video: true, audio: false};
+                    localStream = await navigator.mediaDevices.getUserMedia(constraints)
+		            localVideo.srcObject = localStream;
+                    console.log('Getting user media with constraints', constraints);
+                }
+                
+                function handleUserMedia(stream) {
+                    console.log('Adding local stream.');
+                    if (localVideo == null) {
+                        localVideo = document.querySelector('#localVideo');
+                    }
+                    attachMediaStream(localVideo, stream);
+                    localStream = stream;
+                }
+                function handleUserMediaError(error){
+                    console.log('navigator.getUserMedia error: ', error);
+                }
+                function animate(video,context) {
+                    if (output.width != localVideo.clientWidth) {
+                        output.width = localVideo.clientWidth;
+                        output.height = localVideo.clientHeight;
+                        output.style.width = localVideo.clientWidth +'px';
+                        output.style.height = localVideo.clientHeight + 'px';
+                    }
+                   
+                    var tmpCanvas = document.getElementById('output');
+                    var tmpContext = tmpCanvas.getContext('2d');
+                    tmpContext.save();
+                    tmpContext.translate(output.width/2, output.height/2);
+                    tmpContext.scale(-1,1);
+                    tmpContext.translate(-output.width/2, -output.height/2);
+                    tmpContext.drawImage(document.getElementById('localVideo'),0,0,output.width,output.height);
+                    imgData = tmpContext.getImageData(0, 0, output.width,output.height);
+                    tmpContext.restore();
+                    
+                    
+                    
+                    
+                    //save old data every cdCount frames
+                    if(frameCount % cdCount == 0) {
+                        oldData = tmpContext.getImageData(0, 0, output.width,output.height);
+                    }
+                    //box2d stuff
+                    if(!firstStart && document.getElementById("oo").innerHTML == 1) {
+                        var tm = new Date().getTime();
+                        var dt = (tm - lastFrame) / 1000;
+                        if(dt > 1/15) { dt = 1/15; }
+                        physics.step(dt,imgData,oldData);
+                        physics.note
+                        //physics.setG(Math.sin(-frameCount/100));
+                        //if(frameCount % 100 == 0)
+                        //    physics.weakBrownian();
+                        if(frameCount % 300 == 0)
+                            physics.setRootNote();
+                        lastFrame = tm;
+                        var sliderValue = document.getElementById('rangeValue');
+                        physics.setSensitivity(sliderValue.innerHTML);
+
+                        //physics.sensitivity = sliderValue.innerHTML;
+                        //console.log("SV: ",sliderValue.innerHTML);
+                      //  prevTog = document.getElementById("oo").innerHTML;
+
+                    }
+
+                    //animate
+                    requestAnimFrame(function() { animate(video, tmpContext); });
+                    frameCount++;
+                    
+
+                }
+                  //animate(localVideo, oContext);
+                </script>  
+
+                </head>
+            <body> 
+                <div>
+                <canvas id="output" width="720" height="480" style='padding: 0; margin: auto; display: block; width: 720px;'></canvas>
+                 <div class="buttoncontainer" style='padding: 0; margin: auto; display: block; width: 720px;'>
+                <input type="button" value="Start/Stop" id="ss">
+                <span id="oo" style='visibility: hidden;'>0</span>
+                 <div class="slidecontainer">
+                <input type="range" min="50" max="10000" value="2000" class="slider" id='myRange'>
+                <p>Hit Sensitivity: <span id="rangeValue"></span></p>
+            </div>
+                <script>
+                    var slider = document.getElementById("myRange");
+                    var rv = document.getElementById("rangeValue");
+                    rv.innerHTML = slider.value;
+                    slider.oninput = function() {
+                        rv.innerHTML = this.value;
+                    }
+                </script>
+               
+            </div>
+                <script type="text/javascript">
+                    var button = document.getElementById("ss");
+                    var ootog = document.getElementById("oo");
+                    button.onclick = function() {
+                        if(ootog.innerHTML == 0) {
+                            ootog.innerHTML = 1;
+                        } else {
+                            ootog.innerHTML = 0;
+                        }
+                    }
+                </script>
+            </div>
+            <div>
+                <canvas id="textOutput" width="1440" height="480"></canvas>
+            </div>
+
+            
+            <div>
+                <video id='localVideo' width="720" height="480" playsinline autoplay style='visibility: hidden'></video>
+            </div>
+
+        </body>
+    </html>
+
