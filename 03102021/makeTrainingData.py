@@ -9,7 +9,7 @@ def readFiles(fileList):
 	files = fileList_hd.readlines()
 	fileList_hd.close();
 
-	cnt = 1
+	cnt = 0
 	allPoems = []
 	for poemFile in files:
 		poemFile = poemFile.strip('\n')
