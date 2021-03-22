@@ -1,0 +1,5 @@
+man
+woman
+king
+queen
+virgin
