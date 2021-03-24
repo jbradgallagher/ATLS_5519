@@ -1,6 +1,7 @@
 import multiprocessing
 import gensim
 from gensim.models import Word2Vec
+import gensim.downloader as api
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.patheffects as path_effects
@@ -47,8 +48,11 @@ def make_trainData(inFile,useStopWords):
 def train_word2vec(filename):
 	train_filename = "train_" + filename
 	data = gensim.models.word2vec.LineSentence(train_filename)
-	return Word2Vec(data, size=200, window=5, min_count=5, workers=multiprocessing.cpu_count())
+	return Word2Vec(data, size=200, window=5, min_count=1, workers=multiprocessing.cpu_count())
 
+def train_word2vec_text8():
+	corpus = api.load("text8")
+	return Word2Vec(corpus, size=200, window=5, min_count=5, workers=multiprocessing.cpu_count())
 
 def getWordEmbeddings(myModel,wrdList,neighborCnt):
 
@@ -324,6 +328,8 @@ def main():
 	useStopWords = False
 	useTwoWords = False
 	useNegation = False
+	usePreTrained = False
+
 	myWord = ""
 	myWord2 = ""
 	myWord3 = ""
@@ -341,7 +347,7 @@ def main():
 		printUsage()
 	else:
 		try:
-			opts, args = getopt.getopt(sys.argv[1:], 'f:n:p:m:W:w:N:s:o:3S')
+			opts, args = getopt.getopt(sys.argv[1:], 'f:n:p:m:W:w:N:s:o:3SP')
 			for o, a in opts:
 				if o == '-f':
 					inFile = a
@@ -362,11 +368,16 @@ def main():
 					stride = int(a)
 				if o == '-o':
 					offset = float(a)
+				if o == '-P':
+					usePreTrained = True
 
 			#parse input file for training
 			#train word2vec model
-			make_trainData(inFile,useStopWords)
-			myModel = train_word2vec(inFile)
+			if usePreTrained:
+				myModel = train_word2vec_text8()
+			else:
+				make_trainData(inFile,useStopWords)
+				myModel = train_word2vec(inFile)
 			
 			if(simCircle and not useNegation):
 				if(useTwoWords):
