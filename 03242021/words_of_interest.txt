@@ -1,0 +1,7 @@
+love
+hate
+create
+destroy
+god
+jesus
+devil
