@@ -311,8 +311,14 @@ def getWrdList(fname):
 	return wlist
 
 def printUsage():
-	print("|(2d and 3d TSNE Plots)| python3 word2vec_viz.py -f <inFile> -p <perplexity> -n <neighbor count (for 2d)> -m <word list (for 2d)> -3 <make 3d plot>")
-	print("|(circle Similarity plot)| python3 word2vec_viz.py -f <inFile> -W <word> -w <word number two (optional)> -n <neighbor count>")
+	print("|(Circle Similarity Plot One Word)| python3 word2vec_viz.py -f <inFile> -n <neighbor count> -W <word> -S <useStopWords> -s <angle_stride> -o <negative offset>")
+	print("|(Circle Similarity Plot Two Words)| python3 word2vec_viz.py -f <inFile> -n <neighbor count> -W <word> -w <word2> -S <useStopWords> -s <angle_stride> -o <negative offset>")
+	print("|(Arithmetic Plot)| python3 word2vec_viz.py -f <inFile> -n <neighbor count> -W <word> -w <word2> -N <negate word> -S <useStopWords> -s <angle_stride> -o <negative offset>")
+	print("or for using pre-trained \"text8\" corpus:")
+	print("|(Circle Similarity Plot One Word)| python3 word2vec_viz.py -P -n <neighbor count> -W <word> -S <useStopWords> -s <angle_stride> -o <negative offset>")
+	print("|(Circle Similarity Plot Two Words)| python3 word2vec_viz.py -P -n <neighbor count> -W <word> -w <word2> -S <useStopWords> -s <angle_stride> -o <negative offset>")
+	print("|(Arithmetic plot)| python3 word2vec_viz.py -P -n <neighbor count> -W <word> -w <word2> -N <negate word> -S <useStopWords> -s <angle_stride> -o <negative offset>")
+	
 	sys.exit()
 
 def main():
