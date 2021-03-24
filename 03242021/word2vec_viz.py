@@ -377,7 +377,6 @@ def main():
 					plotSimilarityCircleStride(words,scores,myWord,stride,offset)
 			if(useNegation):
 				negateResult = getNegationNeighbor(myModel,myWord,myWord2,myWord3,neighborCnt)
-				print("WHAT: ",negateResult)
 				words, scores = getNeighborSimilarity(myModel,myWord,neighborCnt)
 				plotSimilarityCircleStrideNegation(words,scores,negateResult[0][0],stride,offset,myWord,myWord2,myWord3)
 			#getTopNNeighbors(myModel,myWord,neighborCnt)
