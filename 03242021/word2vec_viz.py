@@ -123,12 +123,31 @@ def getTopNNeighbors(myModel,myWord,neighborCnt):
 
 def getNegationNeighbor(myModel,myWord,myWord2,myWord3,neighborCnt):
 
-	#vec1, vec2, vec3 = myModel.wv.get_vector(myWord), myModel.wv.get_vector(myWord3), myModel.wv.get_vector(myWord3)
+	vec1, vec2, vec3 = myModel.wv.get_vector(myWord), myModel.wv.get_vector(myWord2), myModel.wv.get_vector(myWord3)
 
-	#result = myModel.similar_by_vector(vec1 - vec2 + vec3)
-	result = myModel.wv.most_similar(positive=[myWord, myWord2], negative=[myWord3])
-	#print(result)
-	return result
+	result = myModel.similar_by_vector((vec1 + vec2) - vec3)
+	#return the first value that doesn't contain myWord
+	returnRes = ""
+	for resVal in result:
+		if resVal[0] != myWord:
+			returnRes = resVal[0]
+			break
+
+	return returnRes
+
+def getMidPointNeighbor(myModel,myWord,myWord2,neighborCnt):
+
+	vec1, vec2 = myModel.wv.get_vector(myWord), myModel.wv.get_vector(myWord2)
+
+	result = myModel.similar_by_vector((vec1 + vec2)/2.0)
+	#return the first value that isn't myWord or myWord2
+	returnRes = ""
+	for resVal in result:
+		if resVal[0] != myWord and resVal[0] != myWord2:
+			returnRes = resVal[0]
+			break
+
+	return returnRes
 
 
 def getAllWordEmbeddings(myModel):
@@ -211,6 +230,43 @@ def plotSimilarityCircleStrideNegation(words,scores,myWord,stride,offset,myWord1
 	equation = "(" + myWord1 + " " + "+" + " " + myWord2 + ")" + " " + "-" + " " + myWord3 + " " + "=" + " " + myWord
 	
 	txt = plt.text(-1.0*len(equation)*0.018,0,equation,c="white",size=16)
+	txt.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'),path_effects.Normal()])
+	#plt.annotate(myWord, alpha=1.0, xy=(0,0), xytext=(5,2), textcoords='offset points', ha='right', va='bottom', size=16)
+	cnt = 0
+	nwords = []
+	nscores = []
+	norms = []
+	ncolors = []
+
+	# collects words and scores across the stride
+	#and normalize again
+
+	for word, score, color in zip(words,scores,colors):
+		if cnt % stride == 0:
+			nwords.append(word)
+			nscores.append(float(cnt)/360.)
+		cnt += 1
+
+	norms = normalizeScores(nscores)
+	ncolors = cm.rainbow(np.linspace(0, 1, len(nwords)))
+	for word, norm, color in zip(nwords[:len(nwords)-1],norms[:len(norms)-1],ncolors[:len(ncolors)-1]):
+			x = np.cos(norm)
+			y = np.sin(norm)
+			plt.scatter(x, y, c=color, alpha=0.0, label=word)
+			xoffset = offset*np.cos(norm)
+			yoffset = offset*np.sin(norm)
+			txt = plt.text(x+xoffset,y+yoffset,word,c=color,size=12)
+			txt.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'),path_effects.Normal()])
+
+	plt.axis('off')
+	plt.show()
+
+def plotSimilarityCircleStrideMidPoint(words,scores,myWord,stride,offset,myWord1,myWord2):
+	plt.figure(figsize=(9, 9))
+	colors = cm.rainbow(np.linspace(0, 1, len(words)))
+	equation = "(" + myWord1 + " " + "+" + " " + myWord2 + ")" + " " + "/" + " " + "2.0" + " " + "=" + " " + myWord
+	
+	txt = plt.text(-1.0*len(equation)*0.013,0,equation,c="white",size=16)
 	txt.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'),path_effects.Normal()])
 	#plt.annotate(myWord, alpha=1.0, xy=(0,0), xytext=(5,2), textcoords='offset points', ha='right', va='bottom', size=16)
 	cnt = 0
@@ -334,6 +390,7 @@ def main():
 	useStopWords = False
 	useTwoWords = False
 	useNegation = False
+	useMidPoint = False
 	usePreTrained = False
 
 	myWord = ""
@@ -353,7 +410,7 @@ def main():
 		printUsage()
 	else:
 		try:
-			opts, args = getopt.getopt(sys.argv[1:], 'f:n:p:m:W:w:N:s:o:3SP')
+			opts, args = getopt.getopt(sys.argv[1:], 'f:n:p:m:W:w:N:s:o:3SPM')
 			for o, a in opts:
 				if o == '-f':
 					inFile = a
@@ -376,6 +433,8 @@ def main():
 					offset = float(a)
 				if o == '-P':
 					usePreTrained = True
+				if o == '-M':
+					useMidPoint = True
 
 			#parse input file for training
 			#train word2vec model
@@ -385,7 +444,7 @@ def main():
 				make_trainData(inFile,useStopWords)
 				myModel = train_word2vec(inFile)
 			
-			if(simCircle and not useNegation):
+			if(simCircle and not useNegation and not useMidPoint):
 				if(useTwoWords):
 					words, scores, words2, scores2 = getNeighborSimilarityTwoWords(myModel,myWord,myWord2,neighborCnt)
 					plotSimilarityCircleStrideTwoWords(words,scores,myWord,words2,scores2,myWord2,stride,offset)
@@ -394,8 +453,14 @@ def main():
 					plotSimilarityCircleStride(words,scores,myWord,stride,offset)
 			if(useNegation):
 				negateResult = getNegationNeighbor(myModel,myWord,myWord2,myWord3,neighborCnt)
-				words, scores = getNeighborSimilarity(myModel,myWord,neighborCnt)
-				plotSimilarityCircleStrideNegation(words,scores,negateResult[0][0],stride,offset,myWord,myWord2,myWord3)
+				words, scores = getNeighborSimilarity(myModel,negateResult,neighborCnt)
+				plotSimilarityCircleStrideNegation(words,scores,negateResult,stride,offset,myWord,myWord2,myWord3)
+
+			if(useMidPoint):
+				midPointResult = getMidPointNeighbor(myModel,myWord,myWord2,neighborCnt)
+				words, scores = getNeighborSimilarity(myModel,midPointResult,neighborCnt)
+				plotSimilarityCircleStrideMidPoint(words,scores,midPointResult,stride,offset,myWord,myWord2)
+
 			#getTopNNeighbors(myModel,myWord,neighborCnt)
 			#getNegationNeighbor(myModel,myWord,myWord2,myWord3,neighborCnt)
 
