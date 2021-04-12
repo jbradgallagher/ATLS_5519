@@ -146,7 +146,7 @@ model.compile(
     optimizer='adam',
     loss=losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=['accuracy'])
-history = model.fit(train_data, validation_data=validation_data, epochs=25)
+history = model.fit(train_data, validation_data=validation_data, epochs=3)
 
 loss, accuracy = model.evaluate(validation_data)
 
@@ -182,8 +182,9 @@ print("Accuracy: {:2.2%}".format(accuracy))
 
 
 
-ashberies = open("ashbery.list", "r");
+ashberies = open("files_list.txt", "r");
 ashbey_files = ashberies.readlines()
+outFile = open("poet_classifications.txt", "w", encoding="utf-8")
 
 for ashFile in ashbey_files:
 	ashFile = ashFile.strip('\n')
@@ -220,46 +221,53 @@ for ashFile in ashbey_files:
 		twoAvg = labelTwoSum/lbl_cnt2
 		threeAvg = labelThreeSum/lbl_cnt3
 
-		print(ashFile," ",oneAvg," ",twoAvg," ",threeAvg)
+		outString = ashFile + " " + str(oneAvg) + " " + str(twoAvg) + " " + str(threeAvg) + "\n"
+		outFile.write(outString)
+
+outFile.close()
+
+poetOneList = []
+poetTwoList = []
+poetThreeList = []
+
+clFile = open("poet_classifications.txt", "r")
+lines = clFile.readlines()
+clFile.close()
+
+for line in lines:
+	data = line.split(" ")
+	if(data[1] > data[2] and data[1] > data[3]):
+		poetOneList.append(data[0])
+	if(data[2] > data[1] and data[2] > data[3]):
+		poetTwoList.append(data[0])
+	if(data[3] > data[2] and data[3] > data[1]):
+		poetThreeList.append(data[0])
+
+poetOne = open("poetOne_files.txt", "w", encoding="utf-8")
+
+for file in poetOneList:
+	poetOne.write(file+"\n")
+
+poetOne.close()
+
+poetTwo = open("poetTwo_files.txt", "w", encoding="utf-8")
+
+for file in poetTwoList:
+	poetTwo.write(file+"\n")
+
+poetTwo.close()
+
+poetThree = open("poetThree_files.txt", "w", encoding="utf-8")
+
+for file in poetThreeList:
+	poetThree.write(file+"\n")
+
+poetThree.close()
 
 
-audberies = open("auden.list", "r");
-audbey_files = audberies.readlines()
 
-for audFile in audbey_files:
-	audFile = audFile.strip('\n')
-	aFile = open(audFile, "r")
-	audLines = aFile.readlines()
-	if len(audLines) >= 1:
-		predicted_scores = export_model.predict(audLines)
-		predicted_labels = tf.argmax(predicted_scores, axis=1)
-		labelOneSum = 0.0;
-		labelTwoSum = 0.0;
-		labelThreeSum = 0.0;
-		lbl_cnt1 = 1;
-		lbl_cnt2 = 1;
-		lbl_cnt3 = 1;
-		for input, label, score in zip(ashLines, predicted_labels, predicted_scores):
-	  		if(label.numpy() == 0):
-	  			labelOneSum = labelOneSum + score[0]
-	  			lbl_cnt1 = lbl_cnt1 + 1
-	  		if(label.numpy() == 1):
-	  			labelTwoSum = labelTwoSum + score[1]
-	  			lbl_cnt2 = lbl_cnt2 + 1
-	  		if(label.numpy() == 2):
-	  			labelThreeSum = labelThreeSum + score[2]
-	  			lbl_cnt3 = lbl_cnt3 + 1
-	  	
-		if lbl_cnt1 > 1:
-			lbl_cnt1 = lbl_cnt1 - 1;
-		if lbl_cnt2 > 1:
-			lbl_cnt2 = lbl_cnt2 - 1;
-		if lbl_cnt3 > 1:
-	  		lbl_cnt3 = lbl_cnt3 - 1;
-	  		
-		oneAvg = labelOneSum/lbl_cnt1
-		twoAvg = labelTwoSum/lbl_cnt2
-		threeAvg = labelThreeSum/lbl_cnt3
 
-		print(audFile," ",oneAvg," ",twoAvg," ",threeAvg)
+
+
+
 
