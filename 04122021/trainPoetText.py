@@ -146,7 +146,7 @@ model.compile(
     optimizer='adam',
     loss=losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=['accuracy'])
-history = model.fit(train_data, validation_data=validation_data, epochs=3)
+history = model.fit(train_data, validation_data=validation_data, epochs=30)
 
 loss, accuracy = model.evaluate(validation_data)
 
