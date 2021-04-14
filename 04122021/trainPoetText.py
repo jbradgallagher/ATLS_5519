@@ -18,7 +18,7 @@ import tensorflow_text as tf_text
 FILE_NAMES = ["edgar_allan_poe_lines.txt","edna_millay_lines.txt","gertrude_stein_lines.txt"]
 BUFFER_SIZE = 50000
 BATCH_SIZE = int(sys.argv[1])
-VALIDATION_SIZE = 50
+VALIDATION_SIZE = 500
 VOCAB_SIZE = 10000
 MAX_SEQUENCE_LENGTH = 250
 
@@ -146,7 +146,7 @@ model.compile(
     optimizer='adam',
     loss=losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=['accuracy'])
-history = model.fit(train_data, validation_data=validation_data, epochs=30)
+history = model.fit(train_data, validation_data=validation_data, epochs=3)
 
 loss, accuracy = model.evaluate(validation_data)
 
@@ -221,7 +221,14 @@ for ashFile in ashbey_files:
 		twoAvg = labelTwoSum/lbl_cnt2
 		threeAvg = labelThreeSum/lbl_cnt3
 
-		outString = ashFile + " " + str(oneAvg) + " " + str(twoAvg) + " " + str(threeAvg) + "\n"
+		asFileParts = ashFile.split("/")
+		outName = "gen_" + asFileParts[len(asFileParts)-1]
+		outString = outName + " " + str(oneAvg) + " " + str(twoAvg) + " " + str(threeAvg) + "\n"
+		outFile.write(outString)
+	else:
+		asFileParts = ashFile.split("/")
+		outName = "gen_" + asFileParts[len(asFileParts)-1]
+		outString = outName + " " + "0.0 0.0 0.0" "\n"
 		outFile.write(outString)
 
 outFile.close()
